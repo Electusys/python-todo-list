@@ -1,22 +1,22 @@
-# 📝 Python Tkinter Yapılacaklar Listesi (To-Do List)
+#  Python Tkinter Yapılacaklar Listesi (To-Do List)
 
 Modern, sade ve hafif bir masaüstü yapılacaklar listesi uygulaması. Python'ın yerleşik `tkinter` kütüphanesi ve `SQLite` veritabanı kullanılarak geliştirilmiştir.
 
-> ⚠️ **Not:** Bu proje henüz geliştirme aşamasındadır (WIP). Yeni özellikler ve geliştirmeler eklenmeye devam etmektedir.
+>  **Not:** Bu proje henüz geliştirme aşamasındadır (WIP). Yeni özellikler ve geliştirmeler eklenmeye devam etmektedir.
 
 ---
 
-## ✨ Özellikler
+##  Özellikler
 
 - **Görev Yönetimi:** Görev ekleme, tamamlandı olarak işaretleme ve silme.
-- **Koyu Mod (Dark Mode):** Göz yormayan koyu tema ve klasik açık tema arasında tek tıkla geçiş (`🌙 Koyu Mod` / `☀️ Açık Mod`).
+- **Koyu Mod (Dark Mode):** Göz yormayan koyu tema ve klasik açık tema arasında tek tıkla geçiş (`Koyu Mod` /n `Açık Mod`).
 - **Kalıcı Depolama (SQLite):** Görevleriniz ve seçtiğiniz tema tercihi yerel SQLite veritabanında (`todos.db`) otomatik olarak saklanır.
 - **Kullanıcı Dostu Arayüz:** Modern ttk stilleri, duyarlı kaydırma çubuğu ve pratik klavye kısayolları (`Enter` ile hızlı ekleme, çift tıklama ile durum değiştirme).
 - **Hafif ve Bağımsız:** Ekstra üçüncü taraf kütüphane kurulumu gerektirmez, doğrudan standart Python kütüphaneleriyle çalışır.
 
 ---
 
-## 🚀 Başlarken
+##  Başlarken
 
 ### Gereksinimler
 
@@ -37,7 +37,7 @@ Modern, sade ve hafif bir masaüstü yapılacaklar listesi uygulaması. Python'�
 
 ---
 
-## 🎯 Kullanım İpuçları
+##  Kullanım İpuçları
 
 - **Görev Ekleme:** Metin kutusuna görevinizi yazıp **Ekle** butonuna tıklayın veya doğrudan `Enter` tuşuna basın.
 - **Görevi Tamamlama / Geri Alma:**
@@ -49,7 +49,7 @@ Modern, sade ve hafif bir masaüstü yapılacaklar listesi uygulaması. Python'�
 
 ---
 
-## 🗺️ Yol Haritası (Gelecek Özellikler)
+##  Yol Haritası (Gelecek Özellikler)
 
 - [ ] Görev kategorileri / etiketler (İş, Kişisel, vb.)
 - [ ] Görevler için son teslim tarihi (Due date) ve hatırlatıcılar
