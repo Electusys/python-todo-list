@@ -26,8 +26,8 @@ Modern, sade ve hafif bir masaüstü yapılacaklar listesi uygulaması. Python'�
 
 1. Projeyi klonlayın veya indirin:
    ```bash
-   git clone https://github.com/<kullanici-adiniz>/<repo-adi>.git
-   cd <repo-adi>
+   git clone https://github.com/Electusys/python-todo-list.git
+   cd python-todo-list
    ```
 
 2. Uygulamayı çalıştırın:
