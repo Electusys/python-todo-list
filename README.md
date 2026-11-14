@@ -58,6 +58,6 @@ Modern, sade ve hafif bir masaüstü yapılacaklar listesi uygulaması. Python'�
 
 ---
 
-## 📄 Lisans
+##  Lisans
 
 Bu proje açık kaynaklıdır ve MIT lisansı altında paylaşılabilir.
