@@ -1,63 +1,58 @@
-#  Python Tkinter Yapılacaklar Listesi (To-Do List)
+# Python Tkinter Yapılacaklar Listesi
 
-Modern, sade ve hafif bir masaüstü yapılacaklar listesi uygulaması. Python'ın yerleşik `tkinter` kütüphanesi ve `SQLite` veritabanı kullanılarak geliştirilmiştir.
-
->  **Not:** Bu proje henüz geliştirme aşamasındadır (WIP). Yeni özellikler ve geliştirmeler eklenmeye devam etmektedir.
+Modern masaüstü yapılacaklar uygulaması. `tkinter` + `SQLite` ile çalışır; görevler ve hatırlatıcılar yerelde saklanır.
 
 ---
 
-##  Özellikler
+## Özellikler
 
-- **Görev Yönetimi:** Görev ekleme, tamamlandı olarak işaretleme ve silme.
-- **Koyu Mod (Dark Mode):** Göz yormayan koyu tema ve klasik açık tema arasında tek tıkla geçiş (`Koyu Mod` /n `Açık Mod`).
-- **Kalıcı Depolama (SQLite):** Görevleriniz ve seçtiğiniz tema tercihi yerel SQLite veritabanında (`todos.db`) otomatik olarak saklanır.
-- **Kullanıcı Dostu Arayüz:** Modern ttk stilleri, duyarlı kaydırma çubuğu ve pratik klavye kısayolları (`Enter` ile hızlı ekleme, çift tıklama ile durum değiştirme).
-- **Hafif ve Bağımsız:** Ekstra üçüncü taraf kütüphane kurulumu gerektirmez, doğrudan standart Python kütüphaneleriyle çalışır.
-
----
-
-##  Başlarken
-
-### Gereksinimler
-
-- Python 3.10 veya üzeri (tkinter desteği ile)
-
-### Kurulum ve Çalıştırma
-
-1. Projeyi klonlayın veya indirin:
-   ```bash
-   git clone https://github.com/Electusys/python-todo-list.git
-   cd python-todo-list
-   ```
-
-2. Uygulamayı çalıştırın:
-   ```bash
-   python "To do list.py"
-   ```
+- **Görevler:** Ekleme, tamamlama / geri alma, silme (onaylı)
+- **Hatırlatıcılar:** Tarih + saat ile kurma; zamanı gelince Windows bildirimi
+- **Açık / koyu tema:** Tercih SQLite’da saklanır
+- **Kalıcı depolama:** `todos.db` (görevler, hatırlatıcılar, ayarlar)
+- **Arayüz:** Teal görsel kimlik, kartlar, özel daire checkbox, boş durum, kalan sayacı
+- **Kısayollar:** `Enter` ile ekleme, çift tık ile tamamla
 
 ---
 
-##  Kullanım İpuçları
+## Gereksinimler
 
-- **Görev Ekleme:** Metin kutusuna görevinizi yazıp **Ekle** butonuna tıklayın veya doğrudan `Enter` tuşuna basın.
-- **Görevi Tamamlama / Geri Alma:**
-  - Görevin başındaki kutucuğu işaretleyin,
-  - veya göreve çift tıklayın,
-  - veya görevi seçip alttaki **Tamamla / Geri Al** butonuna basın.
-- **Görev Silme:** Görevin sağındaki `✕` butonuna tıklayın veya görevi seçip **Sil** butonuna basın.
-- **Tema Değiştirme:** Sağ üstteki tema butonuna tıklayarak Açık/Koyu mod arasında geçiş yapabilirsiniz.
+- Python 3.10+ (`tkinter` ile)
+- Bildirimler için isteğe bağlı: `pip install winotify` (yoksa uygulama yine çalışır; bildirim atlanabilir)
 
 ---
 
-##  Yol Haritası (Gelecek Özellikler)
+## Kurulum ve çalıştırma
 
-- [ ] Görev kategorileri / etiketler (İş, Kişisel, vb.)
-- [ ] Görevler için son teslim tarihi (Due date) ve hatırlatıcılar
-- [ ] Görev önceliklendirme (Düşük, Orta, Yüksek)
-- [ ] Arama ve filtreleme özellikleri
+```bash
+git clone https://github.com/Electusys/python-todo-list.git
+cd python-todo-list
+python "To do list.py"
+```
+
+İsteğe bağlı bildirim paketi:
+
+```bash
+pip install winotify
+```
 
 ---
 
-##  Lisans
+## Kullanım
 
-Bu proje açık kaynaklıdır ve MIT lisansı altında paylaşılabilir.
+- **Görevler** sekmesi: görev ekle, işaretle, sil
+- **Hatırlatıcılar** sekmesi: başlık + `YYYY-MM-DD` / `HH:MM` ile hatırlatıcı kur
+- Sağ üstten tema değiştir
+
+---
+
+## Notlar
+
+- Yerel veritabanı (`*.db`) git’e eklenmez; her kullanıcıda kendi bilgisayarında oluşur.
+- Mobil sürüm planlanmıyor; proje masaüstü odaklıdır.
+
+---
+
+## Lisans
+
+MIT
