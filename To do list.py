@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import sqlite3
+import subprocess
 import tkinter as tk
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -14,22 +15,78 @@ from typing import Optional
 
 DB_PATH = Path(__file__).resolve().parent / "todos.db"
 
+# winotify app_id özel karakter (ı, ş, ğ…) desteklemez — ASCII kullan
+TOAST_APP_ID = "Yapilacaklar"
 
-def send_notification(title: str, message: str) -> None:
-    """Windows yerel bildirimi (isteğe bağlı winotify)."""
+
+def send_notification(title: str, message: str) -> bool:
+    """Windows toast bildirimi. Başarılıysa True."""
+    title = (title or "Hatırlatıcı").strip() or "Hatırlatıcı"
+    message = (message or "").strip() or "Zamanı gelen bir hatırlatıcınız var."
+
+    # 1) winotify (ASCII app_id zorunlu)
     try:
         from winotify import Notification, audio
 
         toast = Notification(
-            app_id="Yapılacaklar",
+            app_id=TOAST_APP_ID,
             title=title,
             msg=message,
-            duration="short",
+            duration="long",
         )
         toast.set_audio(audio.Default, loop=False)
         toast.show()
+        return True
     except Exception:
         pass
+
+    # 2) Doğrudan PowerShell WinRT toast (stderr yakalanır)
+    try:
+        def xml_escape(text: str) -> str:
+            return (
+                text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace('"', "&quot;")
+            )
+
+        ps = f"""
+[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
+[Windows.UI.Notifications.ToastNotification, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
+[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
+$xml = @"
+<toast duration="long">
+  <visual>
+    <binding template="ToastGeneric">
+      <text>{xml_escape(title)}</text>
+      <text>{xml_escape(message)}</text>
+    </binding>
+  </visual>
+</toast>
+"@
+$doc = New-Object Windows.Data.Xml.Dom.XmlDocument
+$doc.LoadXml($xml)
+$toast = [Windows.UI.Notifications.ToastNotification]::new($doc)
+$notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("{TOAST_APP_ID}")
+$notifier.Show($toast)
+"""
+        completed = subprocess.run(
+            [
+                "powershell.exe",
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-Command",
+                ps,
+            ],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        return completed.returncode == 0
+    except Exception:
+        return False
 
 # Görsel kimlik: teal / mürekkep (mor-beyaz AI klişesi yok)
 THEMES: dict[str, dict[str, str]] = {
@@ -680,11 +737,21 @@ class TodoApp(tk.Tk):
         self.rem_time = ttk.Entry(when, width=8, font=("Segoe UI", 10), style="Todo.TEntry")
         self.rem_time.insert(0, soon.strftime("%H:%M"))
         self.rem_time.pack(side="left")
+        hint_row = ttk.Frame(rem_inner, style="Card.TFrame")
+        hint_row.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(10, 0))
+        hint_row.columnconfigure(0, weight=1)
         ttk.Label(
-            rem_inner,
-            text="Örn: Yarın 15:00 toplantı — zamanı gelince Windows bildirimi gelir.",
+            hint_row,
+            text="Örn: Yarın 15:00 — uygulama açıkken Windows bildirimi + ekran uyarısı gelir.",
             style="Hint.TLabel",
-        ).grid(row=3, column=0, columnspan=2, sticky="w", pady=(10, 0))
+        ).grid(row=0, column=0, sticky="w")
+        ttk.Button(
+            hint_row,
+            text="Bildirim test",
+            style="Secondary.TButton",
+            command=self.test_notification,
+            cursor="hand2",
+        ).grid(row=0, column=1, sticky="e", padx=(8, 0))
 
         self.rem_shell = tk.Frame(
             self.reminders_view,
@@ -1136,16 +1203,82 @@ class TodoApp(tk.Tk):
             lambda _e: del_btn.configure(fg=c["muted"], bg=c["row"]),
         )
 
+    def test_notification(self) -> None:
+        ok = send_notification("Yapilacaklar", "Test bildirimi — bu görünüyorsa tamam.")
+        self._show_reminder_popup("Test bildirimi", "Windows bildirimi denendi.")
+        if ok:
+            self._flash_message("Bildirim gönderildi (sağ alt / Bildirim merkezi)")
+        else:
+            self._flash_message(
+                "Windows bildirimi başarısız — ekran uyarısı gösterildi"
+            )
+
+    def _show_reminder_popup(self, title: str, detail: str) -> None:
+        """Toast görünmese bile uygulama içi üstte uyarı."""
+        pop = tk.Toplevel(self)
+        pop.title("Hatırlatıcı")
+        pop.attributes("-topmost", True)
+        pop.resizable(False, False)
+        c = self.colors
+        pop.configure(bg=c["card"])
+        frame = tk.Frame(pop, bg=c["card"], padx=20, pady=16)
+        frame.pack(fill="both", expand=True)
+        tk.Label(
+            frame,
+            text=title,
+            bg=c["card"],
+            fg=c["text"],
+            font=("Segoe UI Semibold", 13),
+            anchor="w",
+            justify="left",
+            wraplength=360,
+        ).pack(fill="x")
+        tk.Label(
+            frame,
+            text=detail,
+            bg=c["card"],
+            fg=c["muted"],
+            font=("Segoe UI", 10),
+            anchor="w",
+            justify="left",
+            wraplength=360,
+        ).pack(fill="x", pady=(6, 12))
+        tk.Button(
+            frame,
+            text="Tamam",
+            command=pop.destroy,
+            bg=c["accent"],
+            fg="#ffffff",
+            activebackground=c["accent_hover"],
+            activeforeground="#ffffff",
+            relief="flat",
+            padx=16,
+            pady=6,
+            cursor="hand2",
+            font=("Segoe UI Semibold", 10),
+        ).pack(anchor="e")
+        pop.update_idletasks()
+        w, h = pop.winfo_reqwidth(), pop.winfo_reqheight()
+        x = self.winfo_rootx() + max(20, (self.winfo_width() - w) // 2)
+        y = self.winfo_rooty() + 60
+        pop.geometry(f"+{x}+{y}")
+        pop.after(12000, pop.destroy)
+
     def _poll_reminders(self) -> None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
         due = self.store.due_reminders(now)
         for rem in due:
-            send_notification("Hatırlatıcı", rem["title"])
+            title = rem["title"]
+            ok = send_notification("Hatırlatıcı", title)
+            self._show_reminder_popup("Hatırlatıcı", title)
             self.store.mark_reminder_notified(rem["id"])
-            self._flash_message(f"Bildirim: {rem['title']}")
+            self._flash_message(
+                f"Bildirim: {title}" if ok else f"Uyarı: {title} (toast yok)"
+            )
         if due:
             self.refresh_reminders()
-        self._poll_after = self.after(15000, self._poll_reminders)
+        # 5 sn — dakikalık hatırlatıcıyı kaçırmamak için
+        self._poll_after = self.after(5000, self._poll_reminders)
 
     def _on_close(self) -> None:
         try:
