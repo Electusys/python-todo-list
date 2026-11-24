@@ -16,7 +16,7 @@ DB_PATH = Path(__file__).resolve().parent / "todos.db"
 
 
 def send_notification(title: str, message: str) -> None:
-    """Windows yerel bildirimi (telefondaki push için mobil APK gerekir)."""
+    """Windows yerel bildirimi (isteğe bağlı winotify)."""
     try:
         from winotify import Notification, audio
 
@@ -28,15 +28,6 @@ def send_notification(title: str, message: str) -> None:
         )
         toast.set_audio(audio.Default, loop=False)
         toast.show()
-        return
-    except Exception:
-        pass
-    try:
-        from plyer import notification
-
-        notification.notify(
-            title=title, message=message, app_name="Yapılacaklar", timeout=10
-        )
     except Exception:
         pass
 

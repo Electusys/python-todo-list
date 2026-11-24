@@ -49,7 +49,7 @@ pip install winotify
 ## Notlar
 
 - Yerel veritabanı (`*.db`) git’e eklenmez; her kullanıcıda kendi bilgisayarında oluşur.
-- Mobil sürüm planlanmıyor; proje masaüstü odaklıdır.
+- Bu proje yalnızca masaüstü (Windows) içindir.
 
 ---
 
